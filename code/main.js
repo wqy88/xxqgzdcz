@@ -171,7 +171,7 @@ dingYuepage.openNews = function () {
 }
 dingYuepage.slide = function () {
     //upward sliding向上滑动
-    TimeLag = 2000;
+    TimeLag = 1000;
     swipe(dW / 2, dH - dH / 4, dW / 2, dH / 4, TimeLag); //直上滑动
 }
 /***********************************************************************************/
@@ -351,20 +351,32 @@ article.collection = function () {
     sleep(1600);
     return;
 }
+article.share = function () {
+    // 分享
+    className("android.widget.ImageView").drawingOrder(4).depth(10).findOne().click();
+
+    textContains("分享到短信").id("txt_gv_item").waitFor();//等待窗体弹出
+    sleep(300)
+    textContains("分享到短信").id("txt_gv_item").findOne().parent().click();//点击分享到短信
+    sleep(300);
+    launchApp("学习强国"); //打开学习强国 
+    return;
+}
 /***********************************************************************************/
-function readAndCollection(readcout, collectcount, readtime) {
+function readAndCollection(readcout, collectcount, sharecount, readtime) {
     var firstpage = new home();
     var channels = new allChannels();
 
     var r_count = 0; //计数阅读数目
     var c_count = 0; //计数收藏数目
+    var s_count = 0;//计数分享数目
     var r_time = readtime * 1000; //转换阅读时间到毫秒
     var arr = new Array(); //存储文章题目
 
     firstpage.opppenXueXi(); //在首页点击学习按钮
     firstpage.openAllChannels(); //在首页打开全部频道
     channels.openChanne(); //在全部频道打开订阅
-    sleep(3000);
+    sleep(1000);
 
     while (r_count < readcout) {
         dingYuepage.slide(); //订阅页面滑动
@@ -404,8 +416,14 @@ function readAndCollection(readcout, collectcount, readtime) {
                     sleep(r_time);
                     slide.interrupt(); //停止滑动线程
                     if (c_count < collectcount) {
+                        // 收藏文章
                         article.collection();
                         c_count++;
+                        sleep(300);
+                    }
+                    if (s_count < sharecount) {
+                        article.share();
+                        s_count++;
                     }
                 }
                 article.back();
@@ -428,7 +446,7 @@ function readAndCollection(readcout, collectcount, readtime) {
             }
         }
         sleep(2000);
-        console.log("[已看]:" + arr.length + "\t" + "[收藏]：" + c_count);
+        console.log("[已看]:" + arr.length + "\t" + "[收藏]：" + c_count + "\t" + "[分享]" + s_count);
     }
 }
 
@@ -514,6 +532,7 @@ function openlocalchannel() {
     console.log("[学习平台]:" + regionName);
 
 }
+
 /* 
     打开学习强国
     尝试启动学习APP 
@@ -530,18 +549,18 @@ begin.open();// 2020年9月13日：正常
     观看时长：按液晶显示器格式填写 183秒==>3：03==>303
     稳定性：稳定   
  */
-// watchBailing(7, 203);// 2020年9月13日：正常
+watchBailing(7, 203);// 2020年9月13日：正常
 
-watchBailing(5, 105);//测试用1分05秒
+// watchBailing(5, 105);//测试用1分05秒
 
 /*
     阅读文章，通过sleep(times)休眠线程即使,times即为阅读时间
     通过单独线程控制上下滑动
-    readAndCollection(阅读文章数目，收藏数目，阅读每篇文章时间s)
+    readAndCollection(阅读文章数目，收藏数目，分享数目，阅读每篇文章时间s)
     稳定性：中等，有卡死情况和文章下架意外
 */
-// readAndCollection(6, 4, 3);//test
-readAndCollection(6, 4, 66);// 2020年9月13日：正常
+// readAndCollection(6, 4, 3, 5);//test
+readAndCollection(6, 4,3, 66);// 2020年9月13日：正常
 
 
 /*
