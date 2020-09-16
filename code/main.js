@@ -532,7 +532,7 @@ begin.open();// 2020年9月13日：正常
  */
 // watchBailing(7, 203);// 2020年9月13日：正常
 
-// watchBailing(5, 105);//测试用1分05秒
+watchBailing(5, 105);//测试用1分05秒
 
 /*
     阅读文章，通过sleep(times)休眠线程即使,times即为阅读时间
