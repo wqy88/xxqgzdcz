@@ -1,0 +1,16 @@
+{
+  "assets": [],
+  "build": {
+    "build_id": "643D2D88-1",
+    "build_number": 1,
+    "build_time": 1591000723747
+  },
+  "useFeatures": [],
+  "icon": "icon.png",
+  "main": "main.js",
+  "name": "QG助学",
+  "packageName": "com.example",
+  "scripts": {},
+  "versionCode": 2,
+  "versionName": "2020年9月13日"
+}
