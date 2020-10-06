@@ -12,7 +12,7 @@ function star() {
     // 打开学习强国
 }
 star.prototype.open = function () {
-    while (!desc("学习").findOne(2000)) {
+    while (!id("home_bottom_tab_icon_large").findOne(2000)) {
         toast('正在打开学习强国');
         launchApp("学习强国"); //打开学习强国 
         sleep(5000);
@@ -37,14 +37,16 @@ home.prototype.openMy = function () {
 }
 home.prototype.opppenXueXi = function () {
     // 打开学习页面
-    var btn = desc("学习").findOne();
+    var btn = id("home_bottom_tab_icon_large").findOne();
     var xy = btn.bounds();
     click(xy.centerX(), xy.centerY());
 }
 home.prototype.openAllChannels = function () {
     // 打开全部频道
     while (!text("全部频道").drawingOrder(2).findOne(1000)) {
-        className("android.widget.ImageView").depth(15).drawingOrder(1).clickable(true).findOne(2000).click();
+        array = depth(16).drawingOrder(1).clickable(true).find()
+        /* 这儿控件相同条件的都很相似所以使用数组 */
+        array[3].click()
         sleep(1000);
     }
     return true;
@@ -106,7 +108,7 @@ baiLing.getTitle = function () {
 }
 baiLing.prototype.watchVideo = function () {
     // 打开一个
-    var List = className("android.widget.FrameLayout").depth(23).drawingOrder(1).find();
+    var List = className("android.widget.FrameLayout").depth(24).drawingOrder(1).find();
     for (var i = 0; i < List.length; i++) {
         if (List[i].bounds().width() == dW) {
             return (List[i].click());
@@ -549,7 +551,7 @@ begin.open();// 2020年9月13日：正常
     观看时长：按液晶显示器格式填写 183秒==>3：03==>303
     稳定性：稳定   
  */
-watchBailing(7, 203);// 2020年9月13日：正常
+watchBailing(7, 203);// 2020年10月6日：正常
 
 // watchBailing(5, 105);//测试用1分05秒
 
@@ -560,14 +562,14 @@ watchBailing(7, 203);// 2020年9月13日：正常
     稳定性：中等，有卡死情况和文章下架意外
 */
 // readAndCollection(6, 4, 3, 5);//test
-readAndCollection(6, 4,3, 66);// 2020年9月13日：正常
+readAndCollection(6, 4,3, 66);// 2020年10月6日：正常
 
 
 /*
     打开本地频道
     稳定性：稳定
  */
-openlocalchannel();// 2020年9月13日：正常
+openlocalchannel();// 2020年10月6日：正常
 
 
 
