@@ -241,13 +241,8 @@ function photo() {
     // 图片界面
 }
 photo.prototype.back = function () {
-    className("android.widget.ImageView").depth(10).drawingOrder(1).clickable(true).findOne().click();
+    className("android.widget.ImageView").depth(9).drawingOrder(1).clickable(true).findOne().click();
 }
-
-function photoAlbum() {
-    // 图片专辑
-}
-
 function articleAlbum() {
     // 文章专辑
 }
@@ -265,25 +260,23 @@ audioalbum.prototype.back = function () {
 function analysisPage() {
     // 分析是否是普通文章页面,不是则返回
     // 为页面类型编号 文章=1;文章专题=2;图片=3;音频合辑=4;文章已下线=9;
-    if (text("条音频").findOne(1000)) {
+    tag = 1
+    if (text("条音频").findOne(500)) {
         console.log("现在位于音频合辑页面，等待返回");
         return 4;
     }
-    // if (textContains("1/").findOne(1000)) {
-    //     toast("现在位于图片页面，等待返回");
-    //     console.log("现在位于图片页面，等待返回");
-    //     return 3;
-    // }
-    // if (!className("android.widget.ImageView").drawingOrder(3).depth(11).findOne(2000)) {
-    //     console.log("专题页面或图片页面");
-    //     return 2;
-    // }
-    if (!className("android.widget.ImageView").depth(11).drawingOrder(1).clickable(true).findOne(2000)) {
+    if (textContains("1/").findOne(500) && className("android.widget.ImageView").depth(9).drawingOrder(1).clickable(true).findOne(500)) {
+        // 使用两个条件，第一个是图片查看标记，第二个是返回按钮
+        toast("现在位于图片页面，等待返回");
+        console.log("现在位于图片页面，等待返回");
+        return 3;
+    }
+    if (!className("android.widget.ImageView").depth(11).drawingOrder(1).clickable(true).findOne(500)) {
         // 是依据返回按钮进行判断
-        console.log("专题页面或图片页面");
+        console.log("专题页面");
         return 2;
     }
-    return 1; //默认返回真
+    return tag; //默认返回真tag=1
 }
 
 /***********************************************************************************/
@@ -309,17 +302,6 @@ article.getTitle = function () {
         return title;
     }
     // 如果没get到标题返回false
-
-    /* 
-    2020年6月1日注：由于在文章页面获取文章标题一再表现无用所以默认返回true
-    这一般不妨碍正常阅读，因为在 analysisPage()阶段已经过滤掉了一般的非文章页面
-    再加上没阅读完一个文章后的滑动相对而言不太容易重复阅读
-    
-    2020年6月15日:未作改动
-    
-    改善方案：在进入阅读页面之前也就是openNews()阶段就获取到标题装进数组，
-    如果分析后并非文章，删除相应的数组元素即可，这样依然能保证数量和不重复
-    */
     return true;
 
 }
@@ -438,6 +420,7 @@ function readAndCollection(readcout, collectcount, sharecount, readtime) {
             }
             case 3: {
                 var tupian = new photo();
+                sleep(500)//2020年10月9日
                 tupian.back();
                 break;
             }
@@ -551,7 +534,7 @@ begin.open();// 2020年9月13日：正常
     观看时长：按液晶显示器格式填写 183秒==>3：03==>303
     稳定性：稳定   
  */
-watchBailing(7, 203);// 2020年10月6日：正常
+watchBailing(7, 130);// 2020年10月6日：正常
 
 // watchBailing(5, 105);//测试用1分05秒
 
@@ -561,8 +544,8 @@ watchBailing(7, 203);// 2020年10月6日：正常
     readAndCollection(阅读文章数目，收藏数目，分享数目，阅读每篇文章时间s)
     稳定性：中等，有卡死情况和文章下架意外
 */
-// readAndCollection(6, 4, 3, 5);//test
-readAndCollection(6, 4,3, 66);// 2020年10月6日：正常
+// readAndCollection(60, 4, 3, 5);//test
+readAndCollection(7, 4, 3, 66);// 2020年10月6日：正常
 
 
 /*
