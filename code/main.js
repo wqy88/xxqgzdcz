@@ -83,9 +83,6 @@ my.prototype.openSubscribe = function () {
         sleep(2000);
     }
 }
-my.prototype.back = function () {
-    id("my_back").drawingOrder(1).depth(9).clickable(true).findOne().click(); /* 返回 */
-}
 /***********************************************************************************/
 //首页-->百灵
 function baiLing() {
@@ -119,13 +116,6 @@ baiLing.prototype.slide = function () {
     TimeLag = 2000;
     swipe(dW / 2, dH - dH / 5, dW / 2, dH / 5, TimeLag);
 }
-baiLing.prototype.back = function () {
-    // 返回
-    var BTF = className("android.widget.ImageView").depth(8).drawingOrder(2).findOne();
-    console.log(BTF.click());
-    // var xy = BTF.bounds();
-    // click(xy.centerX(), xy.centerY());
-}
 /***********************************************************************************/
 // 首页-->全部频道
 function allChannels() { }
@@ -144,7 +134,6 @@ allChannels.prototype.openlocal = function () {
     var localbtn = clickable(false).depth(11).drawingOrder(1).find()[3];
     localbtn.parent().parent().click();
     return localbtn.text(); //返回地区名字
-
 }
 /***********************************************************************************/
 function dingYuepage() { }
@@ -180,9 +169,6 @@ dingYuepage.slide = function () {
 //首页-->我的-->订阅(订阅公众号)
 function mySubscribe() {
     // 我的订阅页面
-}
-mySubscribe.prototype.back = function () {
-    className("android.widget.LinearLayout").depth(10).drawingOrder(1).clickable(true).findOne().click(); /* 返回 */
 }
 mySubscribe.prototype.add = function () {
     text("添加").clickable(true).findOne(2000).click();
@@ -222,17 +208,10 @@ addSubscribe.add = function (di_c) {
         this.slide()
     }
 }
-addSubscribe.back = function () {
-    className("LinearLayout").depth(10).clickable(true).findOne(3000).click();
-}
 /***********************************************************************************/
 function learningplatform() {
 
 }
-learningplatform.prototype.back = function () {
-    depth(8).clickable(true).drawingOrder(1).findOne().click();
-}
-
 function video() {
     // 普通视频界面
 }
@@ -240,22 +219,13 @@ function video() {
 function photo() {
     // 图片界面
 }
-photo.prototype.back = function () {
-    className("android.widget.ImageView").depth(9).drawingOrder(1).clickable(true).findOne().click();
-}
 function articleAlbum() {
     // 文章专辑
 }
-articleAlbum.prototype.back = function () {
-    className("android.widget.ImageView").depth(10).drawingOrder(1).clickable(true).findOne().click();
-}
-
 function audioalbum() {
     // 声音专辑
 }
-audioalbum.prototype.back = function () {
-    className("android.widget.LinearLayout").depth(9).drawingOrder(1).clickable(true).findOne().click();
-}
+
 
 function analysisPage() {
     // 分析是否是普通文章页面,不是则返回
@@ -287,7 +257,6 @@ article.getTitle = function () {
     // 注：通过className&depthor id 获取标题出现获取不到情况
     // 一共提供两种可行方案
     // 1. (不具有通用性，在某些页面无此关键字，比如新华社文)
-
     // 注：通过className&depthor id 获取标题出现获取不到情况
     if (textMatches(".*(作者|来源).*").findOne(2000)) {
         var tit = textMatches(".*(作者|来源).*").findOne(1000)
@@ -321,9 +290,7 @@ article.slide = function () {
         i++;
     }
 }
-article.back = function () {
-    className("android.widget.ImageView").depth(11).drawingOrder(1).clickable(true).findOne().click(); //返回
-}
+
 article.collection = function () {
     // 收藏
     className("android.widget.ImageView").drawingOrder(3).depth(10).findOne().click();
@@ -338,12 +305,16 @@ article.collection = function () {
 article.share = function () {
     // 分享
     className("android.widget.ImageView").drawingOrder(4).depth(10).findOne().click();
-
     textContains("分享到短信").id("txt_gv_item").waitFor();//等待窗体弹出
     sleep(300)
     textContains("分享到短信").id("txt_gv_item").findOne().parent().click();//点击分享到短信
     sleep(300);
     launchApp("学习强国"); //打开学习强国 
+    /* 因为选择到分享到短信，可能在短信编辑框存在内容的情
+    况下无法正常返回 ，所以重新打开app
+    这样可能再次打开已经不再原来的页面而是在推荐页面
+    这种情况下阅读依然是正常的，只是每次需要重复几次
+    */
     return;
 }
 /***********************************************************************************/
@@ -371,64 +342,48 @@ function readAndCollection(readcout, collectcount, sharecount, readtime) {
             /* 如果没有打开任何一篇文章 */
             continue;
         }
-        switch (analysisPage()) {
-            case 1: {
-                // arr[arr.length] = article.getTitle();//早期文章内获取标题
-                if (arr.indexOf(name) == -1) {
-                    /* 如果标题不再数组内才进行阅读 */
-                    arr[arr.length] = name;
-                    console.log(arr[arr.length - 1]);
-                    r_count = arr.length;
-                    var slide = threads.start(
-                        function () {
-                            /* // 上下滑动 */
-                            // console.log("上下滑动");
-                            for (var i = 0; ; i++) {
-                                sleep(2000);
-                                if (i % 2 == 0) {
-                                    //(1/2,1/4)>(3/4,3/4)
-                                    swipe(dW / 2, dH - dH / 4, dW - dW / 4, dH / 4, TimeLag); //左上滑动
-                                } else {
-                                    //(1/2,3/4)>(3/4,1/4)
-                                    swipe(dW / 2, dH / 4, dW - dW / 4, dH - dH / 4, TimeLag); //右下滑动
-                                }
+        if (analysisPage() == 1) {
+            // arr[arr.length] = article.getTitle();//早期文章内获取标题
+            if (arr.indexOf(name) == -1) {
+                /* 如果标题不再数组内才进行阅读 */
+                arr[arr.length] = name;
+                console.log(arr[arr.length - 1]);
+                r_count = arr.length;
+                var slide = threads.start(
+                    function () {
+                        /* // 上下滑动 */
+                        // console.log("上下滑动");
+                        for (var i = 0; ; i++) {
+                            sleep(2000);
+                            if (i % 2 == 0) {
+                                //(1/2,1/4)>(3/4,3/4)
+                                swipe(dW / 2, dH - dH / 4, dW - dW / 4, dH / 4, TimeLag); //左上滑动
+                            } else {
+                                //(1/2,3/4)>(3/4,1/4)
+                                swipe(dW / 2, dH / 4, dW - dW / 4, dH - dH / 4, TimeLag); //右下滑动
                             }
                         }
-                    ) //开启线程上下滑动
-                    // 计时阅读
-                    console.log("计时阅读");
-                    sleep(r_time);
-                    slide.interrupt(); //停止滑动线程
-                    if (c_count < collectcount) {
-                        // 收藏文章
-                        article.collection();
-                        c_count++;
-                        sleep(300);
                     }
-                    if (s_count < sharecount) {
-                        article.share();
-                        s_count++;
-                    }
+                ) //开启线程上下滑动
+                // 计时阅读
+                console.log("计时阅读");
+                sleep(r_time);
+                slide.interrupt(); //停止滑动线程
+                if (c_count < collectcount) {
+                    // 收藏文章
+                    article.collection();
+                    c_count++;
+                    sleep(300);
                 }
-                article.back();
-                break;
+                if (s_count < sharecount) {
+                    article.share();
+                    s_count++;
+                }
             }
-            case 2: {
-                var wenzhangzhaungti = new articleAlbum();
-                wenzhangzhaungti.back();
-                break;
-            }
-            case 3: {
-                var tupian = new photo();
-                sleep(500)//2020年10月9日
-                tupian.back();
-                break;
-            }
-            case 4: {
-                var yinpinzhuanji = new audioalbum();
-                yinpinzhuanji.back();
-                back();
-            }
+            back();
+        }
+        else {
+            back();
         }
         sleep(2000);
         console.log("[已看]:" + arr.length + "\t" + "[收藏]：" + c_count + "\t" + "[分享]" + s_count);
@@ -479,28 +434,7 @@ function watchBailing(count, time_) {
         sleep(3000);
     }
     threads.shutDownAll(); //关闭子线程
-    bai_ling.back();
-}
-
-function dingyuegongzhonghao(discribecount) {
-    var firstpage = new home();
-    var wode = new my();
-    var mysub = new mySubscribe();
-
-
-    var di_c = discribecount;
-    firstpage.openMy();
-    wode.openSubscribe();
-    sleep(1000);
-    mysub.add();
-    addSubscribe.add(di_c);
-    addSubscribe.back();
-    sleep(500);
-    mysub.back();
-    sleep(500);
-    wode.back();
-
-
+    back();
 }
 
 function openlocalchannel() {
@@ -513,7 +447,7 @@ function openlocalchannel() {
     var regionName = channels.openlocal(); //在全部频道打开本地频道
     text(regionName + "学习平台").findOne().parent().click(); //找到XX学习平台,并打开
     sleep(5000); //停留3秒
-    studyPlat.back(); //返回首页
+    back(); //返回首页
     console.log("[学习平台]:" + regionName);
 
 }
@@ -546,18 +480,8 @@ watchBailing(7, 130);// 2020年10月6日：正常
 */
 // readAndCollection(60, 4, 3, 5);//test
 readAndCollection(7, 4, 3, 66);// 2020年10月6日：正常
-
-
 /*
     打开本地频道
     稳定性：稳定
  */
 openlocalchannel();// 2020年10月6日：正常
-
-
-
-/*
-    订阅公众号（订阅数目）
-    稳定性：不稳定，一直没有成功
- */
-// // dingyuegongzhonghao(2);
